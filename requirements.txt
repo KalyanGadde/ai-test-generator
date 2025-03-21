@@ -1,6 +1,8 @@
 fastapi==0.70.0
-uvicorn==0.15.0
-openai==0.27.0  # Correct OpenAI version
+uvicorn==0.18.3   # Install with standard extras, includes gunicorn and uvloop
+openai==0.27.0               # Latest stable version of OpenAI
 requests==2.26.0
 pytest==6.2.5
-python-dotenv==0.19.2
+python-dotenv==0.19.2        # For managing environment variables securely
+gunicorn==20.1.0             # For running FastAPI with Uvicorn in production (optional)
+uvloop==0.21.0  
