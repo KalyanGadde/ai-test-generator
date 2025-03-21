@@ -4,14 +4,14 @@ import requests
 import subprocess
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
-from ai_test_generator import generate_unit_test  # Importing the function
+from ai_test_generator import generate_unit_test  # Importing function
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 app = FastAPI()
 
-# Retrieve API keys securely from environment variables
+# Retrieve API keys securely
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
@@ -23,29 +23,42 @@ if not OPENAI_API_KEY or not GITHUB_TOKEN:
 async def receive_github_event(request: Request):
     payload = await request.json()
     
-    commit_sha = payload["head_commit"]["id"]
-    repo_name = payload["repository"]["full_name"]
-    modified_files = [
-        file for file in payload["head_commit"]["modified"] if file.endswith(".py")
-    ]
+    # Debugging: Uncomment the next line to print the received payload structure
+    # print(payload)
 
-    for file in modified_files:
-        # Fetch the code from GitHub
-        content = get_file_content(repo_name, file, commit_sha)
+    # Now we extract the commit details from the commits array
+    commits = payload.get("commits", [])
+    if not commits:
+        return {"status": "No commits found in the payload."}
+
+    # Iterate through the commits and process them
+    for commit in commits:
+        commit_sha = commit.get("id")
+        if not commit_sha:
+            continue  # If commit SHA is missing, skip this commit
         
-        # Generate unit tests using OpenAI's GPT-4 model
-        test_code = generate_unit_test(content, OPENAI_API_KEY)
-        
-        # Save the generated unit test in the tests/ directory
-        os.makedirs("tests", exist_ok=True)
-        test_file_path = os.path.join("tests", f"test_{os.path.basename(file)}")
+        repo_name = payload["repository"]["full_name"]
+        modified_files = [
+            file for file in commit.get("modified", []) if file.endswith(".py")
+        ]
 
-        with open(test_file_path, "w") as f:
-            f.write(test_code)
+        for file in modified_files:
+            # Fetch the code from GitHub
+            content = get_file_content(repo_name, file, commit_sha)
+            
+            # Generate unit tests using OpenAI's GPT-4 model
+            test_code = generate_unit_test(content, OPENAI_API_KEY)
+            
+            # Save the generated unit test in the tests/ directory
+            os.makedirs("tests", exist_ok=True)
+            test_file_path = os.path.join("tests", f"test_{os.path.basename(file)}")
 
-    # Run the generated tests
-    test_results = run_tests()
-    post_github_comment(repo_name, commit_sha, test_results)
+            with open(test_file_path, "w") as f:
+                f.write(test_code)
+
+        # Run the generated tests
+        test_results = run_tests()
+        post_github_comment(repo_name, commit_sha, test_results)
 
     return {"status": "Tests generated and executed"}
 
