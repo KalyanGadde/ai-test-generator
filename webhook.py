@@ -36,12 +36,12 @@ async def receive_github_event(request: Request):
         repo_name = payload["repository"]["full_name"]
         modified_files = commit.get("modified", [])
 
-        # Check if there are any modified Python files
-        py_files = [file for file in modified_files if file.endswith(".py")]
-        if not py_files:
-            return {"status": "No Python files found in the commit."}
+        # Check if there are any modified Python files under the src/ directory
+        src_files = [file for file in modified_files if file.startswith("src/") and file.endswith(".py")]
+        if not src_files:
+            return {"status": "No Python files found in the src/ directory."}
 
-        for file in py_files:
+        for file in src_files:
             # Fetch the code from GitHub
             content = get_file_content(repo_name, file, commit_sha)
 
