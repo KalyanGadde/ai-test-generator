@@ -23,33 +23,31 @@ if not OPENAI_API_KEY or not GITHUB_TOKEN:
 @app.post("/webhook")
 async def receive_github_event(request: Request):
     payload = await request.json()
-    
-    # Debugging: Uncomment the next line to print the received payload structure
-    # print(payload)
-
-    # Now we extract the commit details from the commits array
     commits = payload.get("commits", [])
+    
     if not commits:
         return {"status": "No commits found in the payload."}
 
-    # Iterate through the commits and process them
     for commit in commits:
         commit_sha = commit.get("id")
         if not commit_sha:
             continue  # If commit SHA is missing, skip this commit
-        
-        repo_name = payload["repository"]["full_name"]
-        modified_files = [
-            file for file in commit.get("modified", []) if file.endswith(".py")
-        ]
 
-        for file in modified_files:
+        repo_name = payload["repository"]["full_name"]
+        modified_files = commit.get("modified", [])
+
+        # Check if there are any modified Python files
+        py_files = [file for file in modified_files if file.endswith(".py")]
+        if not py_files:
+            return {"status": "No Python files found in the commit."}
+
+        for file in py_files:
             # Fetch the code from GitHub
             content = get_file_content(repo_name, file, commit_sha)
-            
+
             # Generate unit tests using OpenAI's GPT-4 model
             test_code = generate_unit_test(content, OPENAI_API_KEY)
-            
+
             # Save the generated unit test in the tests/ directory
             os.makedirs("tests", exist_ok=True)
             test_file_path = os.path.join("tests", f"test_{os.path.basename(file)}")
