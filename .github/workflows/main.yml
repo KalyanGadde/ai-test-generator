@@ -19,6 +19,10 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Generate test files and commit to GitHub
+        run: |
+          python webhook.py  # This will generate and commit the test files
+
       - name: Run AI-generated tests
         run: |
           pytest tests/
