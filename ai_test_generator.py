@@ -7,12 +7,13 @@ def generate_unit_test(file_content, openai_api_key):
     
     prompt = f"""
     You are an expert Python developer. Your task is to generate comprehensive unit tests for the following function.
-
+    Do not include any markdown code block syntax (like ```python)
     1. If the function definition is missing, first define it properly before writing the tests.
-    2. Include all necessary imports such as `pytest` and any required libraries.
+    2. Include all necessary imports such as `pytest` and any required libraries such as locally all files under tests/.
     3. Save the test files inside a `tests/` directory, ensuring the correct file structure.
     4. Use `pytest` conventions, with multiple test cases covering various edge cases.
     5. Do not include any markdown code block syntax (like ```python)
+    6. add from test import tests
     {file_content}
     Generate the **complete** test file, ensuring it works without modifications.
     """
