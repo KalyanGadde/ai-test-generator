@@ -3,7 +3,7 @@ import openai
 def generate_unit_test(file_content, openai_api_key):
     openai.api_key = openai_api_key
     
-    prompt = f"Generate Python unit test cases using pytest for the following code. Do not include any markdown code block syntax (like ```python) in your response:\n{file_content}"
+    prompt = f"Generate Python unit test cases using pytest for the following code. Do not include any markdown code block syntax (like ```python) in your response. Also include all imports needed:\n{file_content}"
     
     print("file_content: ", file_content)
     
