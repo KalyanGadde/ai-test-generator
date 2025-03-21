@@ -15,6 +15,7 @@ app = FastAPI()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
+
 # Ensure API keys are set
 if not OPENAI_API_KEY or not GITHUB_TOKEN:
     raise ValueError("Missing API keys! Set OPENAI_API_KEY and GITHUB_TOKEN as environment variables.")
