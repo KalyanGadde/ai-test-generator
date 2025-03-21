@@ -22,6 +22,7 @@ if not OPENAI_API_KEY or not GITHUB_TOKEN:
 
 @app.post("/webhook")
 async def receive_github_event(request: Request):
+    print("Webhook received!")
     payload = await request.json()
     commits = payload.get("commits", [])
     
@@ -50,10 +51,13 @@ async def receive_github_event(request: Request):
 
             # Save the generated unit test in the tests/ directory
             os.makedirs("tests", exist_ok=True)
+            print(f"Directory 'tests' exists: {os.path.exists('tests')}")
             test_file_path = os.path.join("tests", f"test_{os.path.basename(file)}")
 
+            print(f"Generating tests for: {file}")
             with open(test_file_path, "w") as f:
                 f.write(test_code)
+                print(f"Test file saved at: {test_file_path}")
 
             # Commit and push the generated test file to GitHub
             commit_and_push_test_files(repo_name, test_file_path, test_code)
