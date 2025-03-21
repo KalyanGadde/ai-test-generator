@@ -19,6 +19,16 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Set environment variables
+        run: echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Set MY_GITHUB_TOKEN environment variable
+        run: echo "MY_GITHUB_TOKEN=${{ secrets.MY_GITHUB_TOKEN }}" >> $GITHUB_ENV
+        env:
+          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+
       - name: Generate test files and commit to GitHub
         run: |
           python webhook.py  # This will generate and commit the test files

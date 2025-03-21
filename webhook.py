@@ -5,6 +5,7 @@ import subprocess
 from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from ai_test_generator import generate_unit_test  # Importing function
+from github import Github
 
 # Load environment variables
 load_dotenv()
@@ -15,12 +16,9 @@ app = FastAPI()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-
 # Ensure API keys are set
 if not OPENAI_API_KEY or not GITHUB_TOKEN:
     raise ValueError("Missing API keys! Set OPENAI_API_KEY and GITHUB_TOKEN as environment variables.")
-else:
-    print("API keys set successfully.")
 
 @app.post("/webhook")
 async def receive_github_event(request: Request):
@@ -57,6 +55,9 @@ async def receive_github_event(request: Request):
             with open(test_file_path, "w") as f:
                 f.write(test_code)
 
+            # Commit and push the generated test file to GitHub
+            commit_and_push_test_files(repo_name, test_file_path, test_code)
+
         # Run the generated tests
         test_results = run_tests()
         post_github_comment(repo_name, commit_sha, test_results)
@@ -74,6 +75,22 @@ def get_file_content(repo, file_path, commit_sha):
     
     content = response.json().get("content", "")
     return base64.b64decode(content).decode("utf-8")
+
+def commit_and_push_test_files(repo_name, test_file_path, test_code):
+    """Commit and push the generated test files to GitHub"""
+    
+    # Authenticate with GitHub using the token
+    g = Github(GITHUB_TOKEN)
+    repo = g.get_repo(repo_name)
+    
+    # Create or update the test file in the repository
+    try:
+        file_content = repo.get_contents(test_file_path, ref="main")
+        # If the file already exists, update it
+        repo.update_file(file_content.path, "Update generated test file", test_code, file_content.sha, branch="main")
+    except:
+        # If the file does not exist, create a new one
+        repo.create_file(test_file_path, "Add generated test file", test_code, branch="main")
 
 def run_tests():
     """Run tests using pytest and return results."""
