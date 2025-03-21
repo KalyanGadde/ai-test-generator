@@ -19,6 +19,8 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 # Ensure API keys are set
 if not OPENAI_API_KEY or not GITHUB_TOKEN:
     raise ValueError("Missing API keys! Set OPENAI_API_KEY and GITHUB_TOKEN as environment variables.")
+else:
+    print("API keys set successfully.")
 
 @app.post("/webhook")
 async def receive_github_event(request: Request):
