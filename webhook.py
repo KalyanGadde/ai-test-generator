@@ -14,7 +14,7 @@ app = FastAPI()
 
 # Retrieve API keys securely
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_TOKEN = os.getenv("MY_GITHUB_TOKEN")
 
 # Ensure API keys are set
 if not OPENAI_API_KEY or not GITHUB_TOKEN:
