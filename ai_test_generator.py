@@ -13,7 +13,7 @@ def generate_unit_test(file_content, openai_api_key):
     3. Save the test files inside a `tests/` directory, ensuring the correct file structure.
     4. Use `pytest` conventions, with multiple test cases covering various edge cases.
     5. Do not include any markdown code block syntax (like ```python)
-    6. add from test import tests
+    6. Import all files from folder src (like from src import ...)
     {file_content}
     Generate the **complete** test file, ensuring it works without modifications.
     """
