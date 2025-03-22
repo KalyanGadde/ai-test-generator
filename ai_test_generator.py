@@ -18,6 +18,7 @@ def generate_unit_test(file_content, openai_api_key):
         from add_values import add
         7. Now, generate a test file for the following module: src/add_values.py
         8. Also do not gerenate test files for __init__.py
+        9. Make sure that we do not have any IndentationError
     {file_content}
     
    
