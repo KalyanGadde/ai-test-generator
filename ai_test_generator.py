@@ -11,12 +11,13 @@ def generate_unit_test(file_content, openai_api_key):
     Important:
         1. Do not include any markdown code block syntax (like ```python), just include actual test code.
         2. Do not use from mymodule import ... or from src.mymodule import ...
-        3. Instead, use imports like from test_sample import add (assuming the function is defined in src/test_sample.py)
+        3. Instead, use imports like from add_values import add (assuming the function is defined in src/add_values.py)
         4. In the test files, simulate that src/ is already added to sys.path, so the imports are directly from the file names (without src. prefix)
         5. Only generate test files using pytest style (functions starting with test_)
-        6. Example: If the function is defined in src/test_sample.py, write this in the test file:
-        from test_sample import add
-        7. Now, generate a test file for the following module: src/test_sample.py
+        6. Example: If the function is defined in src/add_values.py, write this in the test file:
+        from add_values import add
+        7. Now, generate a test file for the following module: src/add_values.py
+        8. Also do not gerenate test files for __init__.py
     {file_content}
     
    
